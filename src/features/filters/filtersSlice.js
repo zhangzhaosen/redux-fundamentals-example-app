@@ -1,4 +1,12 @@
-const initialState = {
+ 
+ export const StatusFilters = {
+    All: 'all',
+    Active: 'active',
+    Completed: 'completed',
+  }
+ 
+ 
+ const initialState = {
     status: 'All',
     colors: []
   }
