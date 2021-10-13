@@ -5,7 +5,7 @@ import { createSelector } from 'reselect'
 
 import { availableColors, capitalize } from '../filters/colors'
 import { StatusFilters, colorFilterChanged, statusFilterChanged } from '../filters/filtersSlice'
-import { selectTodos } from '../todos/todosSlice'
+import { selectTodos, todosAllCompleted, todosCompletedCleared } from '../todos/todosSlice'
 
 // Omit other footer components
 
@@ -79,12 +79,14 @@ const ColorFilters = ({ value: colors, onChange }) => {
 }
 
 const Footer = () => {
-    const todosRemaining = createSelector(
+    const todosRemaining = useSelector(createSelector(
         selectTodos,
         todos => {
             const uncompletedTodos = todos.filter(todo => !todo.completed)
             return uncompletedTodos.length
         })
+    )
+    //debugger;
 
     const { status, colors } = useSelector(state => state.filters)
 
@@ -96,14 +98,23 @@ const Footer = () => {
 
     const onStatusChange = (status) => dispatch(statusFilterChanged(status))
 
+
+    const onMarkAllCompleted = ()=>{
+        dispatch(todosAllCompleted())
+    }
+    const onRemoveCompleted = ()=>{
+        dispatch(todosCompletedCleared())
+    }
+ 
+
     // omit placeholder change handlers
 
     return (
         <footer className="footer">
             <div className="actions">
                 <h5>Actions</h5>
-                <button className="button">Mark All Completed</button>
-                <button className="button">Clear Completed</button>
+                <button className="button" onClick = {onMarkAllCompleted}>Mark All Completed</button>
+                <button className="button" onClick = {onRemoveCompleted} >Clear Completed</button>
             </div>
 
             <RemainingTodos count={todosRemaining} />
