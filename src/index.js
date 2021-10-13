@@ -52,7 +52,7 @@ import store from './store'
 import './api/server'
 
 import { fetchTodos } from './features/todos/todosSlice'
-store.dispatch(fetchTodos)
+store.dispatch(fetchTodos())
 
 
 ReactDOM.render(
