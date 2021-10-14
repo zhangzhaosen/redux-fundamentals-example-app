@@ -1,8 +1,11 @@
 //import { createSelector } from "reselect"
-import { createAsyncThunk, createEntityAdapter, createSelector, createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createEntityAdapter, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 import { client } from "../../api/client"
+import { RootState } from '../../store'
 import { StatusFilters } from '../filters/filtersSlice'
+
+import { CaseReducer } from '@reduxjs/toolkit'
 
 // const initialState = {
 //     status: 'idle',
@@ -19,7 +22,21 @@ function nextTodoId(todos) {
     return maxId + 1
 }
 
-const todosAdapter = createEntityAdapter()
+//  interface Todo {
+//     id: Number
+//     text: string
+//     completed: boolean
+// }
+interface Todo {
+    id: number, 
+    text:string, 
+    completed: boolean, 
+    color: string
+}
+
+
+const todosAdapter = createEntityAdapter<Todo>()
+
 
 const initialState = todosAdapter.getInitialState({
     status: 'idle'
@@ -80,10 +97,12 @@ const initialState = todosAdapter.getInitialState({
 export const fetchTodos = createAsyncThunk('todos/fetchTodos', async () => {
     //debugger;
     const response = await client.get('/fakeApi/todos')
-    return response.todos
+    return response.todos as Todo[]
 })
 
-export const saveNewTodo = createAsyncThunk('todos/saveNewTodo', async text => {
+
+
+export const saveNewTodo = createAsyncThunk('todos/saveNewTodo', async (text:string) => {
     const initialTodo = { text }
     const response = await client.post('/fakeApi/todos', { todo: initialTodo })
     return response.todo
@@ -130,7 +149,7 @@ export const saveNewTodo = createAsyncThunk('todos/saveNewTodo', async text => {
 export const {
     selectAll: selectTodos,
     selectById: selectTodoById
-} = todosAdapter.getSelectors(state => state.todos)
+} = todosAdapter.getSelectors<RootState>(state => state.todos)
 
 export const selectTodoIds = createSelector(  // First, pass one or more "input selector" functions:  
     selectTodos,  // Then, an "output selector" that receives all the input results as arguments  // and returns a final result value  
@@ -262,18 +281,24 @@ const todosSlice = createSlice({
             const todo = action.payload
             state.entities[todo.id] = todo
         },
-        todoToggled(state, action) {
+        todoToggled (
+            state, 
+            action:  PayloadAction<string>
+            ) {
             const todoId = action.payload
             const todo = state.entities[todoId]
             todo.completed = !todo.completed
         },
         todoColorSelected: {
-            reducer(state, action) {
+            reducer(
+                state, 
+                action: PayloadAction<{color:string, todoId: string}>
+                ) {
                 const { color, todoId } = action.payload
                 state.entities[todoId].color = color
             },
-            prepare(todoId, color) {
-                return { payload: { todoId, color } }
+            prepare(todoId:string, color:string) {
+                return { payload: { todoId, color } , meta: {}, error: ''}
             }
         },
         // todoDeleted(state, action) {
@@ -335,8 +360,6 @@ export const {
     todoToggled,
     todoColorSelected,
     todoDeleted,
-    todosLoaded,
-    todosLoading,
     todosAllCompleted,
     todosCompletedCleared
 } = todosSlice.actions

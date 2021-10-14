@@ -54,6 +54,8 @@ import './api/server'
 import { fetchTodos } from './features/todos/todosSlice'
 store.dispatch(fetchTodos())
 
+//const lastReturnedAction = await store.dispatch(fetchTodos())
+
 
 ReactDOM.render(
   // Render a `<Provider>` around the entire `<App>`,

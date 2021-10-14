@@ -5,8 +5,13 @@ export const StatusFilters = {
     Completed: 'completed',
 }
 
+interface state  {
+    status: string , 
+    colors:  string[]
+}
 
-const initialState = {
+
+const initialState: state = {
     status: 'all',
     colors: []
 }

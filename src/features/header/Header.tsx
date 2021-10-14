@@ -1,18 +1,22 @@
-import React, { useState } from 'react'
+import React, { FC, KeyboardEvent, KeyboardEventHandler, useState } from 'react'
 import { useDispatch } from 'react-redux'
 
 import { saveNewTodo } from '../todos/todosSlice'
 
+import  {  AppDispatch } from '../../store'
+//import { useAppDispatch } from '../../app/hooks'
+
 const Header = () => {
     const [text, setText] = useState('')
     const [status, setStatus] = useState('idle')
-    const dispatch = useDispatch()
+    const dispatch =  useDispatch<AppDispatch>();
+
 
     const handleChange = e => setText(e.target.value)
 
-    const handleKeyDown = async e => {
+    const handleKeyDown = async (e : KeyboardEvent )=> {
 
-        const trimmedText = e.target.value.trim()
+        const trimmedText = (e.target as HTMLInputElement).value.trim()
        
         // If the user pressed the Enter key:
         if (e.key === 'Enter' && trimmedText) {
@@ -30,7 +34,7 @@ const Header = () => {
     let loader = isLoading ? <div className="loader" /> : null
 
     return (
-        <header className="header">
+        <div className="header">
             <input
                 type="text"
                 placeholder="What needs to be done?"
@@ -41,7 +45,7 @@ const Header = () => {
                 disabled={isLoading}
             />
             {loader}
-        </header>
+        </div>
     )
 }
 
